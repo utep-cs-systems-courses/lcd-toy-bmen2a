@@ -1,5 +1,9 @@
 /** \file lcddemo.c
  *  \brief A simple demo that draws a string and square
+create 2 new shapes and create a new front
+implement the buttons from Lab 2 and the state machines
+---if it wants to move just know the center and add & subtract from x/y values
+
  */
 
 #include <libTimer.h>
