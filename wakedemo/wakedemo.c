@@ -131,6 +131,9 @@ void main()
     P1OUT &= ~LED;	/* led off */
     or_sr(0x10);	/**< CPU OFF */
     P1OUT |= LED;	/* led on */
+    //sleep is achieved by setting  CPU off bit in SR
+    //interrupts wake up CPU by clearing sr too all zeros
+    
   }
 }
 
