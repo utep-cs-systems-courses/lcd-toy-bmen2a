@@ -6,7 +6,7 @@ CPU             = msp430g2553
 
 CFLAGS          = -mmcu=${CPU} -Os -I./h
 
-LDFLAGS		= -L../lib -L/opt/ti/msp430_gcc/include
+LDFLAGS		= -L/opt/ti/msp430_gcc/include -L../lib 
 
 #switch the compiler (for the internal make rules)
 
@@ -18,6 +18,14 @@ AS              = msp430-elf-gcc -mmcu=${CPU} -c
 all: lcdlab3-c.elf
 
 #additional rules for files
+
+install: libLcd.a
+
+	mkdir -p ../h ../lib
+
+	mv $^ ../lib
+
+	cp *.h ../h
 
 lcdlab3-c.elf: ${COMMON_OBJECTS}
 
