@@ -1,11 +1,8 @@
 #ifndef draw_included
-
 #define draw_included
 
 
-
 typedef unsigned int u_int;
-
 typedef unsigned char u_char;
 
 extern signed char y;
@@ -38,6 +35,6 @@ void draw_left();
 /*
   this function draws a small house.
 */
-void draw_shape(u_char offc, u_char offr, u_char offr, u_int color, u_int color2);
+void draw_shape(u_char offc, u_char offr, u_int color, u_int color2);
 
 #endif // included

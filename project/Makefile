@@ -1,12 +1,7 @@
-# makfile configuration
-
-COMMON_OBJECTS  = main.o p2_interrupt_handler.o switches.o lcd.o wdt_handler.o buzzer.o led.o
-
-CPU             = msp430g2553
-
-CFLAGS          = -mmcu=${CPU} -Os -I./h
-
-LDFLAGS		= -L/opt/ti/msp430_gcc/include -L../lib 
+# makefile configuration
+CPU             	= msp430g2553
+CFLAGS          	= -mmcu=${CPU} -Os -I../h
+LDFLAGS		= -L../lib -L/opt/ti/msp430_gcc/include/
 
 #switch the compiler (for the internal make rules)
 
@@ -15,23 +10,18 @@ CC              = msp430-elf-gcc
 AS              = msp430-elf-gcc -mmcu=${CPU} -c
 
 
-all: lcdlab3-c.elf
+
+all:main.elf
+
+
 
 #additional rules for files
-
-install: libLcd.a
-
-	mkdir -p ../h ../lib
-
-	mv $^ ../lib
-
-	cp *.h ../h
-
-lcdlab3-c.elf: ${COMMON_OBJECTS}
-
+main.elf: ${COMMON_OBJECTS} main.o stateMachines.o state_advance.o buzzer.o p2_interrupt_handler.o switches.o draw.o wdt_handler.o
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ -lTimer -lLcd
 
-load-c: lcdlab3-c.elf
+
+
+load: main.elf
 
 	msp430loader.sh $^
 
@@ -39,4 +29,4 @@ load-c: lcdlab3-c.elf
 
 clean:
 
-	rm -f *.o *.elf *~ *#
+	rm -f *.o *~ *.elf

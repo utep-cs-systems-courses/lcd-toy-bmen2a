@@ -2,8 +2,7 @@
 #include <libTimer.h>
 #include "lcdutils.h"
 #include "lcddraw.h"
-#include "lcd.h"
-#include "switches.h"
+#include "draw.h"
 #include "main.h"
 #include "stateMachines.h"
 #include "buzzer.h"
@@ -24,6 +23,75 @@ int secCount = 0;                 /* keeps track of time */
 char seconds = 0;                 /* keeps track of number of times an interval passed */
 char state_changed = 0;           /* true if a state has changed with the led */
 
+
+
+void wdt_c_handler(){
+
+  switch(master){
+
+  case 0:
+    secCount ++;
+    if(secCount == 10){
+      buzzer_set_period(0);
+    }
+
+    if (secCount == 25 && seconds <= 7) {/* 10 times/sec, while seconds < 8 */
+      seconds++;
+      secCount = 0;
+      redrawScreen = 1;
+      redrawScreen2 = 1;
+    }
+
+    if(secCount == 250 && seconds > 7){                 /* once/sec after typewriter */
+      secCount = 0;
+      redrawScreen = 1;
+      color_advance();                                  /* advance color */
+    }
+    break;
+    
+  case 1:
+    secCount++;
+    switch(movestate){                                  /* different behavior based on movestate */
+    case 0:
+    case 1:
+      if(secCount == 5){                                /* every 5 counts it moves more */
+	redrawScreen = 1;
+	secCount = 0;
+      }
+      break;
+    case 3:
+      break;
+    }
+    break;
+    
+  case 2:
+    seconds++;
+    if(seconds == 125){
+      seconds = 0;
+      substateLed++;
+    }
+    if(substateLed == 5){
+      substateLed = 0;
+    }
+    and_sr(~0x8);      /* GIE disable interrupts */
+    state_changed = state_advance(substateLed); /* i just dont want this interrupted */
+    or_sr(0x8);              /* GIE enable interrupts */
+    break;
+    
+  case 4:
+    seconds++;
+    if(seconds == 125){
+      seconds = 0;
+      substateLed2++;
+    }
+    if(substateLed2 == 2){
+      substateLed2 = 0;
+    }
+    and_sr(~0x8);            /* GIE disable interrupts */
+    or_sr(0x8);              /* GIE enable interrupts */
+    break;
+  }
+}
 void main(){
   P1DIR |= LED_GREEN;/**< Green led on when CPU on */
   P1DIR |= LED_RED;

@@ -28,9 +28,110 @@ void switch_init()/* setup switch */
   P2DIR &= ~SWITCHES;/* set switches' bits for input */
   switch_update_interrupt_sense();
   //led_update();
-
+  master=0;
 }
 void switch_interrupt_handler(){
   char p2val = switch_update_interrupt_sense();
-  switches = ~p2val & SWITCHES;
+  switch(master){
+
+  case 0:
+    if((p2val & SW1) == 0){       /* Load Game */
+      seconds = 0;                /* next few lines update variables */
+      secCount = 0;               /* need to reset secCount */
+      movestate = 3;
+      master = 1;
+      redrawScreen = 1;
+      redrawScreen3 = 1;
+      buzzer_set_period(0);
+    }
+    else if((p2val & SW4) == 0){  /* Load LED */
+      seconds = 0;                /* next few lines update variables */
+      secCount = 0;
+      redrawScreen = 0;
+      redrawScreen2 = 0;
+      master = 2;                 /* updated the master state */
+    }
+    else if((p2val & SW3) == 0){  /* load Buzzer */
+      seconds = 0;                /* next few lines update variables */
+      secCount = 0;
+      redrawScreen = 0;
+      redrawScreen2 = 0;
+      master = 4;/* updated the master state */
+      buzzer_set_period(1000);
+    }
+    else if ((p2val & SW2) == 0){ /* reload Main Menu */
+      master = 0;                 /* next few lines update variables */
+      secCount = 0;
+      seconds = 0;
+      string = "********";
+      redrawScreen = 1;
+      redrawScreen3 = 1;
+      rcolS = screenWidth/2-36;
+    }
+    break;
+    
+  case 1:
+    if((p2val & SW1) == 0){       /* load game */
+      movestate = 3;
+      master = 1;
+      seconds = 0;                /* next few lines update variables */
+      secCount = 0;
+      redrawScreen = 1;
+      redrawScreen3 = 1;
+      buzzer_set_period(0);
+    }
+
+    else if((p2val & SW2) == 0){  /* move to the left */
+      seconds = 0;                /* next few lines update variables */
+      secCount = 0;
+      movestate = 1;
+      master = 1;
+      buzzer_set_period(0);
+    }
+    else if((p2val & SW3) == 0){  /* move to the right */
+      seconds = 0;                /* next few lines update variables */
+      secCount = 0;
+      movestate = 0;
+      master = 1;
+      buzzer_set_period(0);
+    }
+    else if ((p2val & SW4) == 0){ /* Back to Main Menu */
+      master = 0;                 /* next few lines update variables */
+      secCount = 0;
+      seconds = 0;
+      string = "********";
+      redrawScreen = 1;
+      redrawScreen3 = 1;
+      rcolS = screenWidth/2-36;
+    }
+    break;
+
+  case 2:
+
+    if((p2val & SW3) == 0){       /* back to Main Menu */
+      master = 0;                 /* next few lines update variables */
+      secCount = 0;
+      seconds = 8;
+      P1OUT &= ~RED_LED;
+      string = "********";
+      redrawScreen = 0;
+      redrawScreen2 = 0;
+      rcolS = screenWidth/2-36;
+    }
+    break;
+    
+  case 4:
+    if((p2val & SW4) == 0){       /* Back to Main Menu */
+      master = 0;                 /* next few lines update variables */
+      secCount = 0;
+      seconds = 8;
+      P1OUT &= ~RED_LED;
+      string = "********";
+      redrawScreen = 0;
+      redrawScreen2 = 0;
+      rcolS = screenWidth/2-36;
+    }
+    break;
+  }
+  switch_state_changed = 1;
 }
