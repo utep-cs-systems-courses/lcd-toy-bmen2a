@@ -1,35 +1,21 @@
 	.arch msp430g2553
-
 	.p2align 1,0
-
 	.text
 
-
-
 jt:
-
 	.word case0
-
 	.word case1
-
 	.word case2
-
 	.word case3
-
 	.word case4
-
 	.word done
 
 
 
 	.extern red_on_all
-
 	.extern red_66
-
 	.extern toggle_red
-
 	.extern red_33
-
 	.extern red_25
 
 
